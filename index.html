@@ -1,0 +1,818 @@
+<!DOCTYPE HTML>
+<!-- 
+    PORTFOLIO: SHREYAS KUMAR TAH
+    Complete Integrated Version: About (Full) | Experience (Timeline) | Projects (Cards)
+-->
+<html>
+	<head>
+		<title>Portfolio | Shreyas Kumar Tah</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+		
+		<!-- FONTS & ICONS -->
+		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+		
+		<style>
+			/* --- 1. GLOBAL --- */
+			body, input, select, textarea, #header h1, .page h2, .nav-label { font-family: 'Inter', sans-serif !important; }
+			#header { top: 0 !important; transform: translateY(0); }
+			
+			/* ADD THIS HERE */
+			#overlay { opacity: 0.3 !important; } 
+			
+			/* --- 2. MODAL WINDOW (GLASSMORPHISM) --- */
+			#portfolio-content {
+				display: none; background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+				border: 1px solid rgba(255, 255, 255, 0.4); color: #1a1a1a; padding: 60px 50px 100px 50px; 
+				min-height: 550px; max-height: 85vh; overflow-y: auto; overflow-x: hidden; 
+				border-radius: 15px; max-width: 1000px; width: 95%; position: fixed; 
+				top: 50%; left: 50%; transform: translate(-50%, -50%); box-shadow: 0 40px 100px rgba(0,0,0,0.5); 
+				z-index: 9999; animation: modalFadeIn 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+			}
+
+			/* SCROLLBAR FIX (Pulled away from rounded corners) */
+			#portfolio-content::-webkit-scrollbar { width: 8px; }
+			#portfolio-content::-webkit-scrollbar-track { background: transparent; margin: 30px 0; }
+			#portfolio-content::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.1); border-radius: 10px; }
+
+			/* --- 3.  STICKY CLOSE BUTTON /UI ELEMENTS --- */
+			.close-icon-btn {
+				position: sticky; top: -45px; float: right; margin-right: -35px;
+				background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(0,0,0,0.05);
+				color: #333 !important; width: 32px; height: 32px; border-radius: 50%; cursor: pointer;
+				display: flex; align-items: center; justify-content: center; font-size: 0.9rem; 
+				transition: all 0.6s ease; z-index: 10001; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+			}
+			.close-icon-btn:hover { transform: rotate(180deg); background: #ff4d4d; color: #fff !important; }
+
+			/* --- 4. PREVIOUS / NEXT NAVIGATION --- */
+			.title-highlight { width: 60px; height: 6px; background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%); border-radius: 10px; margin-bottom: 15px; }
+			.window-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 60px; padding-top: 30px; border-top: 1px solid rgba(0,0,0,0.05); }
+			.nav-arrow { display: flex; align-items: center; gap: 10px; color: #2575fc !important; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; opacity: 0.5; border: none !important; cursor: pointer; }
+			.nav-arrow:hover { opacity: 1; color: #6a11cb !important; }
+
+			.page h2 { font-size: 2rem; font-weight: 800; color: #000; margin-bottom: 10px; text-transform: uppercase; letter-spacing: -0.5px; }
+			.page p { line-height: 1.6; font-size: 0.95rem; margin-bottom: 1.2em; color: #333; text-align: justify; }
+			.page a { color: #2575fc; text-decoration: none; border-bottom: 1px dotted #2575fc; font-weight: 600; }
+			.page a:hover { border-bottom: 1px solid #2575fc; }
+
+			/* --- 6. ABOUT ME & SIDEBAR --- */
+			.about-container { display: flex; gap: 40px; }
+			.about-main { flex: 2.2; }
+			.about-sidebar { flex: 0.8; display: flex; flex-direction: column; align-items: center; gap: 15px; }
+			.profile-photo { width: 160px; height: 160px; border-radius: 50%; background: #eee url('assets/css/images/my-photo.jpg') center/cover; border: 4px solid #fff; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin-bottom: 5px; }
+			
+			.sidebar-row { display: flex; gap: 12px; align-items: center; justify-content: center; }
+			.sidebar-row a { font-size: 1.1rem; color: #333 !important; border: none; transition: 0.3s; display: flex; align-items: center; }
+			.social-icon:hover { filter: invert(1) brightness(0.6); transform: translateY(-2px); }
+			.cv-link { font-size: 0.75rem !important; font-weight: 800; background: rgba(0,0,0,0.06); padding: 6px 16px; border-radius: 4px; text-transform: uppercase; color: #333 !important; border: none !important; gap: 10px !important; }
+			.cv-link:hover { background: #27ae60 !important; color: #fff !important; filter: none !important; transform: translateY(-2px); }
+
+			/* --- 7. EXPERIENCE (VERTICAL TIMELINE) --- */
+			.v-timeline-container { position: relative; padding-left: 40px; margin-top: 20px; }
+			.v-timeline-line { position: absolute; left: 8px; top: 0; bottom: 0; width: 4px; background: linear-gradient(180deg, #6a11cb 0%, #2575fc 100%); border-radius: 2px; }
+			.v-timeline-item { position: relative; margin-bottom: 65px; cursor: pointer; }
+			.v-timeline-marker { position: absolute; left: -39px; top: 5px; width: 18px; height: 18px; background: #fff; border: 4px solid #6a11cb; border-radius: 50%; z-index: 2; transition: 0.3s; }
+			.v-timeline-info { max-width: 250px; text-align: left; }
+			.v-timeline-info h4 { font-size: 0.85rem; font-weight: 900; margin-bottom: 2px; color: #000; line-height: 1.2; }
+			.v-timeline-info span { font-size: 0.75rem; color: #666; display: block; }
+			.v-timeline-info .v-date { font-size: 0.65rem; font-weight: 800; color: #2575fc; text-transform: uppercase; margin-top: 5px; }
+
+			.role-tag { font-size: 0.6rem; text-transform: uppercase; font-weight: 900; padding: 2px 6px; border-radius: 3px; display: inline-block; margin-top: 8px; }
+			.role-research { background: rgba(106, 17, 203, 0.1); color: #6a11cb; }
+			.role-industry { background: rgba(37, 117, 252, 0.1); color: #2575fc; }
+			.role-drdo { background: rgba(0, 0, 0, 0.08); color: #333; }
+
+			.v-timeline-details { position: absolute; top: -30px; left: 320px; width: 480px; background: #fff; padding: 25px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.08); box-shadow: 0 15px 40px rgba(0,0,0,0.1); opacity: 0; visibility: hidden; transition: all 0.4s ease; text-align: left; pointer-events: none; z-index: 100; }
+			.v-timeline-item:hover .v-timeline-marker { background: #6a11cb; transform: scale(1.3); }
+			.v-timeline-item:hover .v-timeline-details { opacity: 1; visibility: visible; transform: translateX(15px); }
+			.v-timeline-item:last-child .v-timeline-details { top: -200px; }
+
+			.hover-instruction { display: block !important; font-size: 0.7rem !important; font-weight: 700 !important; color: #000 !important; opacity: 0.3 !important; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 30px; }
+			.v-timeline-details ul li { font-size: 0.82rem !important; line-height: 1.4 !important; margin-bottom: 5px !important; color: #444 !important; }
+
+			/* --- 8. PROJECTS & COMMON SLIDESHOW SYSTEM --- */
+			.projects-container { display: flex; flex-direction: column; gap: 30px; margin-top: 30px; }
+			.project-card { background: #fff; border: 1px solid rgba(0,0,0,0.05); border-radius: 12px; padding: 30px; display: flex; gap: 30px; align-items: flex-start; box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
+			.project-content { flex: 1.5; }
+			.project-visuals { flex: 1; }
+			.project-card h3 { font-size: 1.2rem; font-weight: 900; color: #000; margin-bottom: 5px; }
+			.project-date { font-size: 0.75rem; font-weight: 800; color: #2575fc; text-transform: uppercase; display: block; margin-bottom: 15px; }
+			.project-link { font-weight: 800; color: #000; text-decoration: none; border-bottom: 2px solid #27ae60; padding-bottom: 2px; }
+			.drdo-note { color: #888; font-style: italic; font-size: 0.75rem; display: flex; align-items: center; gap: 5px; }
+
+			/* REUSABLE SLIDESHOW FRAME (For Images and Videos) */
+			.slideshow-frame { 
+				width: 100%; 
+				height: 200px; 
+				background: rgba(255, 255, 255, 0.5); 
+				border-radius: 8px; 
+				margin-bottom: 15px; 
+				position: relative; 
+				overflow: hidden; 
+				border: 1px solid #eee; 
+				box-shadow: inset 0 2px 10px rgba(0,0,0,0.05); 
+			}
+
+			/* Apply same styling to BOTH images and videos */
+			.slideshow-frame img, 
+			.slideshow-frame video { 
+				position: absolute; 
+				top: 0; 
+				left: 0; 
+				width: 100%; 
+				height: 100%; 
+				object-fit: contain; 
+				padding: 10px; 
+				opacity: 0; 
+				transition: opacity 1s ease-in-out; 
+				z-index: 1;
+			}
+
+			/* Active state for BOTH */
+			.slideshow-frame img.active, 
+			.slideshow-frame video.active { 
+				opacity: 1 !important; 
+				z-index: 5 !important; 
+			}
+
+			/* --- 9. TAGS & LISTS --- */
+			.tag-container, .work-tag-container { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 15px; border-top: 1px solid #f0f0f0; padding-top: 15px; }
+			.tag, .work-tag { font-size: 0.65rem; font-weight: 700; color: #777; background: #f9f9f9; padding: 4px 8px; border-radius: 4px; }
+
+			.work-points, .project-card ul, .v-timeline-details ul { list-style: none !important; padding: 0 !important; margin: 15px 0; }
+			.work-points li, .project-card li, .v-timeline-details li { position: relative; padding-left: 20px; font-size: 0.85rem; margin-bottom: 6px; line-height: 1.4; color: #444; }
+			.work-points li::before, .v-timeline-details li::before { content: "•"; color: #6a11cb; position: absolute; left: 0; font-weight: bold; }
+			.project-card li::before { content: "✔"; color: #27ae60; position: absolute; left: 0; font-weight: bold; }
+
+			/* --- 10. NEWS SECTION --- */
+			.news-section { margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; }
+			.news-section h3 { font-weight: 800; font-size: 1.2rem; color: #000; margin-bottom: 20px; }
+			.news-group { margin-bottom: 25px; }
+			.news-year-header { font-weight: 900; font-size: 1rem; color: #000; margin-bottom: 10px; display: block; border-left: 4px solid #6a11cb; padding-left: 10px; }
+			.news-item { margin-bottom: 8px; padding-left: 15px; font-size: 0.85rem; line-height: 1.4; display: block; color: #555; }
+			.news-tag { font-weight: 800; color: #000; margin-right: 5px; font-size: 0.75rem; } 
+			.tag-blue { color: #2575fc !important; } 
+
+			/* --- 11. NAV LABELS --- */
+			.nav-label { position: absolute; top: 4.5em; left: 50%; transform: translateX(-50%) translateY(10px); font-size: 0.7rem; font-weight: 400; text-transform: uppercase; letter-spacing: 0.2em; color: rgba(255, 255, 255, 0.7); opacity: 0; visibility: hidden; transition: all 0.3s ease; }
+			#nav ul li:hover .nav-label { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); color: #fff; }
+
+			/* --- 12. STARTUP PAGE (SPOTLIGHT) --- */
+			#bg::after { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(106, 17, 203, 0.15) 0%, transparent 50%); pointer-events: none; z-index: 1; }
+			#nav ul li a { transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 50% !important; }
+			#nav ul li a:hover { transform: scale(1.15); box-shadow: 0 0 30px rgba(37, 117, 252, 0.4); }
+
+			/* --- 13. ANIMATIONS --- */
+			body.loaded #header, body.loaded #header nav li { animation-delay: 0s !important; opacity: 1 !important; }
+			@keyframes modalFadeIn { from { opacity: 0; transform: translate(-50%, -48%); } to { opacity: 1; transform: translate(-50%, -50%); } }
+			@media screen and (max-width: 900px) { .project-card { flex-direction: column; } .about-container { flex-direction: column; } .v-timeline-details { position: static; width: 100%; opacity: 1; visibility: visible; } }
+			
+			/* --- 11. MOBILE RESPONSIVE FIXES (Only trigger on phones) --- */
+			@media screen and (max-width: 736px) {
+				#bg { height: 100% !important; width: 100% !important; background-size: cover !important; background-position: center !important; position: fixed !important; }
+				
+				/* FIX: Positioning the Close Button so it's not cut off */
+				.close-icon-btn {
+					position: absolute !important; /* Absolute works better than sticky on small mobile headers */
+					top: 10px !important;
+					right: 10px !important;
+					margin-right: 0 !important; /* Removes the desktop negative margin */
+					width: 28px !important;
+					height: 28px !important;
+					font-size: 0.8rem !important;}
+
+				/* Fix Timeline Alignment */
+				.v-timeline-container { padding-left: 35px !important; margin-left: 5px !important; }
+				.v-timeline-line { left: 8px !important; top: 0 !important; bottom: 0 !important; }
+				.v-timeline-marker { left: -34px !important; top: 5px !important; width: 18px !important; height: 18px !important; }
+				
+				/* Force row for Startup Icons */
+				#nav ul { display: flex !important; justify-content: center !important; width: 100% !important; }
+				#nav ul li { width: 18% !important; margin: 0 1% !important; }
+				#header nav a:before { font-size: 1.1rem !important; width: 2.2em !important; height: 2.2em !important; line-height: 2.2em !important; }
+
+				/* Fix Contact Socials */
+				#contact .sidebar-row { display: flex !important; flex-direction: row !important; flex-wrap: nowrap !important; overflow-x: auto !important; }
+
+				#portfolio-content { padding: 40px 15px 80px 15px !important; width: 95% !important; max-height: 85vh !important; }
+				.about-container { flex-direction: column !important; }
+				.v-timeline-details { position: static !important; width: 100% !important; opacity: 1 !important; visibility: visible !important; transform: none !important; margin-top: 10px !important; padding: 15px !important; }
+				/* .project-card { flex-direction: column !important; } */
+				.page p { font-size: 0.85rem !important; text-align: left !important; }
+				
+				/* --- PROJECT MOBILE FIX --- */
+				.project-card { 
+					flex-direction: column !important; 
+					padding: 20px !important;
+				}
+				.project-content, .project-visuals { 
+					width: 100% !important; 
+					flex: none !important;
+				}
+				.project-visuals {
+					order: -1; /* Puts image ABOVE the text on mobile */
+					margin-bottom: 15px;
+					display: block !important;
+					height: 200px !important; /* FORCES images to have space */
+				}
+				.slideshow-frame { 
+					height: 200px !important; /* Ensure the frame is tall enough */
+					width: 100% !important;
+					display: block !important;
+				}
+				.slideshow-frame img, .slideshow-frame video {
+					width: 100% !important;
+					height: 100% !important;
+				}
+			}
+		</style>
+
+	</head>
+	<body class="is-preload">
+		<div id="wrapper">
+			<div id="bg"></div>
+			<div id="overlay"></div>
+			<div id="main">
+
+				<!-- HEADER: Landing Screen -->
+				<header id="header">
+					<h1>Shreyas Kumar Tah</h1>
+					<!-- <p>AI Researcher @ IISc Bangalore &nbsp;&bull;&nbsp; Multimodal Systems &nbsp;&bull;&nbsp; LLM Agents</p> -->
+					<p>Trained as an engineer &nbsp;&bull;&nbsp; Fine-tuned as a researcher</p>
+					
+					<nav id="nav">
+						<ul>
+							<li><a href="javascript:void(0)" onclick="toggleSection('about')" class="icon solid fa-user"></a><span class="nav-label">About Me</span></li>
+							<li><a href="javascript:void(0)" onclick="toggleSection('experience')" class="icon solid fa-briefcase"></a><span class="nav-label">Experience</span></li>
+							<li><a href="javascript:void(0)" onclick="toggleSection('projects')" class="icon solid fa-code"></a><span class="nav-label">Projects</span></li>
+							<li><a href="javascript:void(0)" onclick="toggleSection('achievements')" class="icon solid fa-trophy"></a><span class="nav-label">Achievements</span></li>
+							<li><a href="javascript:void(0)" onclick="toggleSection('contact')" class="icon solid fa-envelope"></a><span class="nav-label">Contact</span></li>
+						</ul>
+					</nav>
+				</header>
+
+				<div id="portfolio-content">
+					<button class="close-icon-btn" onclick="closeSection()"><i class="fas fa-times"></i></button>
+					<!-- SECTION 1: ABOUT ME -->
+					<div id="about" class="page" style="display:none;">
+						<!-- Sticky Close Button -->
+						<button class="close-icon-btn" onclick="closeSection()"><i class="fas fa-times"></i></button>
+
+						<div class="about-container">
+							<div class="about-main">
+								<div class="title-highlight"></div>
+								<h2>About Me</h2>
+								<p>I am a Research Associate at the <a href="https://sites.google.com/iisc.ac.in/somabiswas/iacv-lab-iisc" target="_blank">IACV Lab, IISc Bangalore</a>, where my research focuses on multimodal learning, robustness, and interpretable AI systems. My work lies at the intersection of computer vision and language models, with an emphasis on designing reliable, resource-efficient, and reasoning-driven frameworks for real-world challenges.</p>
+
+								<p style="margin-bottom: 10px; font-weight: 600;">My research and development efforts broadly explore:</p>
+								<ul class="work-points">
+									<li>Multimodal learning using Vision-Language Models, with applications in analysing complex real-world information</li>
+									<li>Resource-efficient and data-efficient AI systems designed for low-resource and limited-annotation settings</li>
+									<li>Robust, uncertainty-aware, and reasoning-driven machine learning frameworks</li>
+								</ul>
+
+								<p>Previously, I worked as an AI Engineer at <a href="http://grainscope.ai" target="_blank">Grainscope AI</a>, where I developed computer vision pipelines for industrial grain quality assessment. My technical contributions to the Grain Analyser product were formally recognized through a government-issued copyright certificate obtained by the company. I also held research roles at <a href="https://www.indiascienceandtechnology.gov.in/organisations/ministry-and-departments/defence-research-and-development-organisation-drdo-govt-india/centre-artificial-intelligence-robotics-cair" target="_blank">CAIR-DRDO Bangalore</a> and IISc Bangalore. I hold a Bachelor of Technology in Mechanical Engineering from BIT Sindri, graduating with a CGPA of 8.4/10. My undergraduate thesis on AI-driven airfoil optimisation was awarded 2nd Best Thesis in the department.</p>
+								
+								<p>Beyond research and engineering, I have a strong inclination toward visual creativity and design. I enjoy painting, exploring digital aesthetics, and blending artistic thinking with technical problem-solving. I consider myself a workaholic who genuinely enjoys deep, focused work, while also embracing a minimalist lifestyle centered on clarity, simplicity, and intentional living. I am equally passionate about mentoring, leadership, and community-driven initiatives.</p>
+
+								<!-- NEWS TIMELINE -->
+								<div class="news-section">
+									<h3>News & Highlights</h3>
+									<div class="news-group">
+										<span class="news-year-header">2025</span>
+										<span class="news-item"><span class="news-tag tag-blue">[PAPER]</span> HybridNet – Submitted</span>
+										<span class="news-item"><span class="news-tag tag-blue">[PAPER]</span> ALARM – Submitted</span>
+										<span class="news-item"><span class="news-tag tag-blue">[RECOGNITION]</span> Author in copyright certificate for <a href="http://grainscope.ai" target="_blank">Grainscope AI</a></span>
+										<span class="news-item"><span class="news-tag">[POSITION]</span> Predoctoral Fellow – <a href="https://kiac.iisc.ac.in/" target="_blank">KIAC, IISc</a></span>
+									</div>
+									<div class="news-group">
+										<span class="news-year-header">2024</span>
+										<span class="news-item"><span class="news-tag tag-blue">[PAPER]</span> FRAUD-Net – Accepted at WACV</span>
+										<span class="news-item"><span class="news-tag tag-blue">[RECOGNITION]</span> 2nd Best Bachelor’s Thesis</span>
+										<span class="news-item"><span class="news-tag">[POSITION]</span> Research Associate – <a href="https://sites.google.com/iisc.ac.in/somabiswas/iacv-lab-iisc" target="_blank">IACV Lab, IISc</a></span>
+									</div>
+									<div class="news-group">
+										<span class="news-year-header">2023</span>
+										<span class="news-item"><span class="news-tag">[POSITION]</span> AI Engineer – Grainscope AI</span>
+										<span class="news-item"><span class="news-tag">[PROJECT]</span> Grain Analyser System</span>
+										<span class="news-item"><span class="news-tag">[POSITION]</span> Research Intern – <a href="https://drdo.gov.in" target="_blank">CAIR-DRDO</a></span>
+									</div>
+									<div class="news-group">
+										<span class="news-year-header">2022</span>
+										<span class="news-item"><span class="news-tag">[POSITION]</span> R&D Head – <a href="https://www.mesbits.in/" target="_blank">MES, BIT Sindri</a></span>
+										<span class="news-item"><span class="news-tag">[POSITION]</span> President – <a href="https://www.paintingwing.com/" target="_blank">Fine Arts Club (Painting Wing)</a></span>
+									</div>
+								</div>
+							</div>
+							<div class="about-sidebar">
+								<div class="profile-photo"></div>
+								<div class="sidebar-row">
+									<a href="https://www.linkedin.com/in/shreyas-kumar-tah-7296b9202/" target="_blank" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+									<a href="mailto:shreyaskumartah@gmail.com" class="social-icon"><i class="fas fa-envelope"></i></a>
+									<a href="https://github.com/skt-shreyas/" target="_blank" class="social-icon"><i class="fab fa-github"></i></a>
+									<a href="https://behance.net/shreyaskumart" target="_blank" class="social-icon"><i class="fab fa-behance"></i></a>
+									<a href="Shreyas_Kumar_Tah_Resume.pdf" class="cv-link" target="_blank"><i class="fas fa-file-download"></i> CV</a>
+								</div>
+							</div>
+						</div>
+
+						<!-- WINDOW NAVIGATION -->
+						<div class="window-nav">
+							<div></div> <!-- Empty left side for About -->
+							<a href="javascript:void(0)" onclick="toggleSection('experience')" class="nav-arrow next">
+								Experience <i class="fas fa-arrow-right"></i>
+							</a>
+						</div>
+					</div>
+					
+					<!-- SECTION 2: EXPERIENCE -->
+					<div id="experience" class="page" style="display:none;">
+						<!-- Sticky Close Button -->
+						<button class="close-icon-btn" onclick="closeSection()"><i class="fas fa-times"></i></button>
+
+						<div class="title-highlight"></div>
+						<h2>Experience</h2>
+						<span class="hover-instruction">Hover any experience for more details</span>
+						
+						<div class="v-timeline-container">
+							<div class="v-timeline-line"></div>
+
+							<!-- 1. KIAC -->
+							<div class="v-timeline-item">
+								<div class="v-timeline-marker"></div>
+								<div class="v-timeline-info">
+									<h4><a href="https://kiac.iisc.ac.in/" target="_blank">KIAC, IISc Bangalore</a></h4>
+									<span>Predoctoral Fellow</span>
+									<span class="v-date">Oct 2025 – Present</span>
+									<span class="role-tag role-research">Research Role</span>
+								</div>
+								<div class="v-timeline-details">
+									<div class="slideshow-frame">
+										<img src="assets/css/images/experiences/p1.jpg" class="active">
+										<img src="assets/css/images/experiences/p2.jpg">
+									</div>
+									<ul>
+										<li>Researching robustness & interpretability in multimodal fake news detection</li>
+										<li>Focus on low-resource & distribution shift scenarios</li>
+										<li>Developed HybridNet & ALARM (under submission)</li>
+									</ul>
+									<div class="work-tag-container">
+										<span class="work-tag">Robustness</span> <span class="work-tag">Multimodal</span> <span class="work-tag">ML</span> <span class="work-tag">CV</span> <span class="work-tag">PyTorch</span>
+									</div>
+								</div>
+							</div>
+
+							<!-- 2. IACV Lab -->
+							<div class="v-timeline-item">
+								<div class="v-timeline-marker"></div>
+								<div class="v-timeline-info">
+									<h4><a href="https://sites.google.com/iisc.ac.in/somabiswas/iacv-lab-iisc" target="_blank">IACV Lab, IISc Bangalore</a></h4>
+									<span>Research Associate</span>
+									<span class="v-date">June 2024 – March 2026</span>
+									<span class="role-tag role-research">Research Role</span>
+								</div>
+								<div class="v-timeline-details">
+									<div class="slideshow-frame">
+										<img src="assets/css/images/experiences/i1.jpg" class="active">
+										<img src="assets/css/images/experiences/i2.jpg">
+										<img src="assets/css/images/experiences/i3.jpg">
+									</div>
+									<ul>
+										<li>Worked on DRDO-funded Multimodal OSINT Analysis</li>
+										<li>Designed fusion mechanisms using CLIP + Transformers</li>
+										<li>Developed FraudNet (WACV 2025), HybridNet, ALARM</li>
+									</ul>
+									<div class="work-tag-container">
+										<span class="work-tag">Robustness</span> <span class="work-tag">Multimodal</span> <span class="work-tag">ML</span> <span class="work-tag">CV</span> <span class="work-tag">PyTorch</span>
+									</div>
+								</div>
+							</div>
+
+							<!-- 3. Grainscope AI -->
+							<div class="v-timeline-item">
+								<div class="v-timeline-marker"></div>
+								<div class="v-timeline-info">
+									<h4><a href="http://grainscope.ai" target="_blank">Grainscope AI</a></h4>
+									<span>AI Engineer (Hybrid)</span>
+									<span class="v-date">July 2023 – Feb 2025</span>
+									<span class="role-tag role-industry">Industry Role</span>
+								</div>
+								<div class="v-timeline-details">
+									<div class="slideshow-frame">
+										<img src="assets/css/images/experiences/g1.jpg" class="active">
+										<img src="assets/css/images/experiences/g2.jpg">
+										<img src="assets/css/images/experiences/g3.jpg">
+										<img src="assets/css/images/experiences/g4.jpg">
+									</div>
+									<ul>
+										<li>Built computer vision pipeline for Grain Analyser</li>
+										<li>Implemented object detection & segmentation models</li>
+										<li>Reduced manual inspection time by 90%+</li>
+									</ul>
+									<div class="work-tag-container">
+										<span class="work-tag">Robustness</span> <span class="work-tag">Multimodal</span> <span class="work-tag">ML</span> <span class="work-tag">CV</span> <span class="work-tag">PyTorch</span>
+									</div>
+								</div>
+							</div>
+
+							<!-- 4. CAIR, DRDO -->
+							<div class="v-timeline-item">
+								<div class="v-timeline-marker"></div>
+								<div class="v-timeline-info">
+									<h4><a href="https://drdo.gov.in" target="_blank">CAIR, DRDO Bangalore</a></h4>
+									<span>Intern</span>
+									<span class="v-date">May 2023 – July 2023</span>
+									<span class="role-tag role-drdo">DRDO</span>
+								</div>
+								<div class="v-timeline-details">
+									<!-- ADDED MULTIPLE IMAGES HERE -->
+									<div class="slideshow-frame">
+										<img src="assets/css/images/experiences/d1.jpg" class="active">
+										<img src="assets/css/images/experiences/d2.jpg">
+										<img src="assets/css/images/experiences/d3.jpg">
+									</div>
+									<ul>
+										<li>Developed environmental perception model</li>
+										<li>Comparative study of CNN architectures</li>
+										<li>Optimised weather detection robustness</li>
+									</ul>
+									<div class="work-tag-container">
+										<span class="work-tag">Robustness</span> <span class="work-tag">Multimodal</span> <span class="work-tag">ML</span> <span class="work-tag">CV</span> <span class="work-tag">PyTorch</span>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<!-- WINDOW NAVIGATION -->
+						<div class="window-nav">
+							<a href="javascript:void(0)" onclick="toggleSection('about')" class="nav-arrow prev">
+								<i class="fas fa-arrow-left"></i> About
+							</a>
+							<a href="javascript:void(0)" onclick="toggleSection('projects')" class="nav-arrow next">
+								Projects <i class="fas fa-arrow-right"></i>
+							</a>
+						</div>
+					</div>
+
+
+					<!-- SECTION 3: PROJECTS & PUBLICATIONS -->
+					<div id="projects" class="page" style="display:none;">
+						<!-- Sticky Close Button -->
+						<button class="close-icon-btn" onclick="closeSection()"><i class="fas fa-times"></i></button>
+
+						<div class="title-highlight"></div>
+						<h2>Projects & Publications</h2>
+						<span class="hover-instruction" style="opacity: 0.4;">Research Highlights & Technical Engineering Work</span>
+
+						<!-- PART A: SCIENTIFIC PUBLICATIONS -->
+						<div style="margin-top: 40px;">
+							<div class="title-highlight" style="width: 40px; height: 4px;"></div>
+							<h3 style="font-size: 1.1rem; font-weight: 800; text-transform: uppercase; color: #000; margin-bottom: 20px;">Scientific Publications</h3>
+							
+							<div class="projects-container" style="margin-top: 10px;">
+								
+								<!-- Publication 1 -->
+								<div class="project-card" style="padding: 20px 30px;">
+									<div class="project-content" style="flex: 1;">
+										<p style="margin-bottom: 0;">
+											<span class="news-tag tag-blue">[PAPER]</span> 
+											<a href="https://openaccess.thecvf.com/content/WACV2025/papers/Patel_FRAUD-Net_Fraud_News_Detection_using_Sample_Uncertainty__Domain_Aware_WACV_2025_paper.pdf" target="_blank" style="color: #000; text-decoration: none; border-bottom: 1px solid #ddd;">
+												<strong>FRAUD-Net:</strong> Fraud News Detection Using Sample Uncertainty & Domain Aware Generalized Network 
+											</a>
+											<span style="color: #666; font-weight: 600; font-size: 0.8rem; margin-left: 5px;">(WACV 2025)</span>
+										</p>
+									</div>
+								</div>
+
+								<!-- Publication 2 -->
+								<div class="project-card" style="padding: 20px 30px;">
+									<div class="project-content" style="flex: 1;">
+										<p style="margin-bottom: 0;">
+											<span class="news-tag tag-blue">[PAPER]</span> 
+											<strong>HybridNet:</strong> Data-Efficient Fake News Detection via Hybrid Active Learning and Reasoning-Aware Classification
+											<span style="color: #666; font-weight: 600; font-size: 0.8rem; margin-left: 5px;">(Under Submission)</span>
+										</p>
+									</div>
+								</div>
+
+								<!-- Publication 3 -->
+								<div class="project-card" style="padding: 20px 30px;">
+									<div class="project-content" style="flex: 1;">
+										<p style="margin-bottom: 0;">
+											<span class="news-tag tag-blue">[PAPER]</span> 
+											<strong>ALARM:</strong> Multimodal Framework for Robust Fake News Detection in Low-Resource Settings
+											<span style="color: #666; font-weight: 600; font-size: 0.8rem; margin-left: 5px;">(Under Submission)</span>
+										</p>
+									</div>
+								</div>
+
+							</div>
+						</div>
+
+						<!-- PART B: TECHNICAL PROJECTS -->
+						<div style="margin-top: 60px;">
+							<div class="title-highlight" style="width: 40px; height: 4px;"></div>
+							<h3 style="font-size: 1.1rem; font-weight: 800; text-transform: uppercase; color: #000; margin-bottom: 20px;">Technical Projects</h3>
+							
+							<div class="projects-container" style="margin-top: 10px;">
+								
+								<!-- Project 1 -->
+								<div class="project-card">
+									<div class="project-content">
+										<h3>Fake News Detection Agentic System</h3>
+										<span class="project-date">July 2025 – Dec 2025</span>
+										<p>Developed an agentic multimodal system integrating research algorithms.</p>
+										<ul class="work-points">
+											<li>Offline evidence retrieval via Vector DB</li>
+											<li>80% reduction in query processing time</li>
+										</ul>
+										<div class="tag-container">
+											<span class="tag">Python</span> <span class="tag">LangGraph</span> <span class="tag">vLLM</span> <span class="tag">FastAPI</span>
+										</div>
+										<span class="drdo-note"><i class="fas fa-lock"></i> Associated with DRDO (Proprietary)</span>
+									</div>
+									<div class="project-visuals">
+										<div class="slideshow-frame">
+											<img src="assets/css/images/projects/f0.jpg" class="active">
+											<img src="assets/css/images/projects/f1.jpg">
+											<img src="assets/css/images/projects/f2.jpg">
+											<img src="assets/css/images/projects/f3.jpg">
+											<img src="assets/css/images/projects/f4.jpg">
+										</div>
+									</div>
+								</div>
+
+								<!-- Project 2 -->
+								<div class="project-card">
+									<div class="project-content">
+										<h3>Automated Fact-Checking (MLLM-based)</h3>
+										<span class="project-date">Jan 2025 – June 2025</span>
+										<p>Designed a zero-shot multimodal fact-checking pipeline with deep consistency verification.</p>
+										<ul class="work-points">
+											<li>78% accuracy on NewsClippings dataset</li>
+											<li>Generated interpretable reasoning outputs</li>
+										</ul>
+										<div class="tag-container">
+											<span class="tag">Python/PyTorch</span> <span class="tag">CLIP</span> <span class="tag">LLMs/VLMs</span> <span class="tag">Streamlit</span>
+										</div>
+										<span class="drdo-note"><i class="fas fa-lock"></i> Associated with DRDO (Proprietary)</span>
+									</div>
+									<div class="project-visuals">
+										<div class="slideshow-frame">
+											<img src="assets/css/images/projects/fc0.jpg" class="active">
+											<img src="assets/css/images/projects/fc1.jpg">
+											<img src="assets/css/images/projects/fc2.jpg">
+										</div>
+									</div>
+								</div>
+
+								<!-- Project 3 -->
+								<div class="project-card">
+									<div class="project-content">
+										<h3>AI-Based Airfoil Optimization</h3>
+										<span class="project-date">Aug 2023 – May 2024</span>
+										<p>Built a framework to rank 1,600+ airfoils using PINN-based optimization.</p>
+										<ul class="work-points">
+											<li>Collaborated with CFD specialists on design optimization</li>
+											<li>75× speed-up vs traditional CFD methods</li>
+										</ul>
+										<div class="tag-container">
+											<span class="tag">Python</span> <span class="tag">AeroSandbox</span> <span class="tag">NeuralFoil</span>
+										</div>
+										<div style="margin-top:15px;"><a href="https://github.com/skt-shreyas/Btech-Thesis" target="_blank" class="project-link">View GitHub →</a></div>
+									</div>
+									<div class="project-visuals">
+										<div class="slideshow-frame">
+											<img src="assets/css/images/projects/a0.jpg">
+											<!-- The active class can be on a video or an image -->
+											<video src="assets/css/images/projects/a_video.mp4" class="active" autoplay muted loop playsinline></video>
+											<!-- You can still keep images in the same loop if you want -->
+											<img src="assets/css/images/projects/a1.jpg">
+										</div>
+									</div>
+								</div>
+
+							</div>
+						</div>
+
+						<!-- WINDOW NAVIGATION -->
+						<div class="window-nav">
+							<a href="javascript:void(0)" onclick="toggleSection('experience')" class="nav-arrow prev">
+								<i class="fas fa-arrow-left"></i> Experience
+							</a>
+							<a href="javascript:void(0)" onclick="toggleSection('achievements')" class="nav-arrow next">
+								Achievements <i class="fas fa-arrow-right"></i>
+							</a>
+						</div>
+					</div>
+
+
+					<!-- SECTION 4: ACHIEVEMENTS -->
+					<div id="achievements" class="page" style="display:none;">
+						<!-- Sticky Close Button -->
+						<button class="close-icon-btn" onclick="closeSection()"><i class="fas fa-times"></i></button>
+						
+						<div class="title-highlight"></div>
+						<h2>Achievements</h2>
+						<p>A summary of my academic honors, leadership roles, and professional recognitions.</p>
+						
+						<div class="news-section" style="border-top:none; margin-top:30px;">
+							
+							<!-- PART A: HONORS & AWARDS -->
+							<div class="news-group" style="margin-bottom: 50px;">
+								<div class="title-highlight" style="width: 40px; height: 4px;"></div>
+								<h3 style="font-size: 1.1rem; font-weight: 800; text-transform: uppercase; color: #000; margin-bottom: 20px; letter-spacing: 1px;">Honors & Awards</h3>
+								
+								<div class="news-item">
+									<span class="news-tag tag-blue">[RECOGNITION]</span> 
+									Awarded <strong>2nd Best Thesis</strong> (Mechanical Dept.), BIT Sindri
+								</div>
+								<div class="news-item">
+									<span class="news-tag">[AWARD]</span> 
+									<strong>Winner</strong>, Social Strategy Development (SSD) Event, GYWS - IIT Kharagpur
+								</div>
+								<div class="news-item">
+									<span class="news-tag">[AWARD]</span> 
+									<strong>Finalist</strong>, WeldRight (Machine Learning Business Case Challenge), IIT Bombay
+								</div>
+								<div class="news-item">
+									<span class="news-tag">[RANK]</span> 
+									<strong>Top 35 Rank</strong>, 'Adhyayan' (Socio-Innovation Case Study Challenge), IIT Kharagpur
+								</div>
+							</div>
+
+							<!-- PART B: LEADERSHIP -->
+							<div class="news-group">
+								<div class="title-highlight" style="width: 40px; height: 4px;"></div>
+								<h3 style="font-size: 1.1rem; font-weight: 800; text-transform: uppercase; color: #000; margin-bottom: 20px; letter-spacing: 1px;">Leadership</h3>
+								
+								<div class="news-item">
+									<span class="news-tag">[POSITION]</span> 
+									<strong>President</strong>, Fine Arts Club (Painting Wing), BIT Sindri (2023-2024)
+								</div>
+								<div class="news-item">
+									<span class="news-tag">[POSITION]</span> 
+									<strong>Research and Development Head</strong>, Mechanical Engineering Society (MES) (2023-2024)
+								</div>
+								<div class="news-item">
+									<span class="news-tag">[POSITION]</span> 
+									<strong>Founding Member</strong>, LiGHT GYWS, BIT Sindri Chapter (2022-2023)
+								</div>
+							</div>
+
+						</div>
+
+						<!-- WINDOW NAVIGATION -->
+						<div class="window-nav">
+							<a href="javascript:void(0)" onclick="toggleSection('projects')" class="nav-arrow prev">
+								<i class="fas fa-arrow-left"></i> Projects
+							</a>
+							<a href="javascript:void(0)" onclick="toggleSection('contact')" class="nav-arrow next">
+								Contact <i class="fas fa-arrow-right"></i>
+							</a>
+						</div>
+					</div>
+
+					<!-- SECTION 5: CONTACT -->
+					<div id="contact" class="page" style="display:none;">
+						<button class="close-icon-btn" onclick="closeSection()"><i class="fas fa-times"></i></button>
+						
+						<div class="title-highlight"></div>
+						<h2>Contact</h2>
+						
+						<p>I am always open to discussing research collaborations, AI engineering opportunities, or design projects. Feel free to reach out via any of the platforms below.</p>
+						
+						<!-- Professional Status Badge -->
+						<div style="display: inline-block; background: rgba(37, 117, 252, 0.1); border: 1px solid #2575fc; color: #2575fc; padding: 6px 15px; border-radius: 20px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 30px;">
+							<i class="fas fa-circle" style="font-size: 8px; margin-right: 8px; vertical-align: middle;"></i> Available for Collaborations
+						</div>
+
+						<!-- Contact Grid -->
+						<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 10px;">
+							
+							<!-- Left: Direct Details -->
+							<div>
+								<div style="margin-bottom: 20px;">
+									<span style="font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: #888; display: block; margin-bottom: 5px;">Email Address</span>
+									<p style="font-weight: 700; margin-bottom: 0;"><a href="mailto:shreyaskumartah@gmail.com" style="color: #000; border-bottom: 1px solid #ddd;">shreyaskumartah@gmail.com</a></p>
+								</div>
+
+								<div style="margin-bottom: 20px;">
+									<span style="font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: #888; display: block; margin-bottom: 5px;">Phone Number</span>
+									<p style="font-weight: 700; margin-bottom: 0; color: #000;">+91 9006946686</p>
+								</div>
+
+								<div>
+									<span style="font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: #888; display: block; margin-bottom: 5px;">Current Location</span>
+									<p style="font-weight: 700; margin-bottom: 0; color: #000;">IISc Bangalore / Ranchi, India</p>
+								</div>
+							</div>
+
+							<!-- Right: Social Links -->
+							<div style="display: flex; flex-direction: column; gap: 10px;">
+								<span style="font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: #888; display: block; margin-bottom: 5px;">Social Profiles</span>
+								
+								<div style="display: flex; gap: 12px; flex-wrap: wrap;">
+									<!-- LinkedIn -->
+									<a href="https://www.linkedin.com/in/shreyas-kumar-tah-7296b9202/" target="_blank" style="width: 42px; height: 42px; background: #000; color: #fff !important; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-size: 1.1rem; transition: 0.3s; border: none;">
+										<i class="fab fa-linkedin-in"></i>
+									</a>
+									
+									<!-- GitHub -->
+									<a href="https://github.com/skt-shreyas/" target="_blank" style="width: 42px; height: 42px; background: #000; color: #fff !important; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-size: 1.1rem; transition: 0.3s; border: none;">
+										<i class="fab fa-github"></i>
+									</a>
+
+									<!-- Behance -->
+									<a href="https://behance.net/shreyaskumart" target="_blank" style="width: 42px; height: 42px; background: #000; color: #fff !important; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-size: 1.1rem; transition: 0.3s; border: none;">
+										<i class="fab fa-behance"></i>
+									</a>
+
+									<!-- Instagram (Placeholder Link) -->
+									<a href="YOUR_INSTAGRAM_LINK_HERE" target="_blank" style="width: 42px; height: 42px; background: #000; color: #fff !important; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-size: 1.1rem; transition: 0.3s; border: none;">
+										<i class="fab fa-instagram"></i>
+									</a>
+								</div>
+								<p style="font-size: 0.75rem; color: #888; margin-top: 10px;">Click icons to view my work across platforms.</p>
+							</div>
+
+						</div>
+
+						<!-- WINDOW NAVIGATION -->
+						<div class="window-nav">
+							<a href="javascript:void(0)" onclick="toggleSection('achievements')" class="nav-arrow prev">
+								<i class="fas fa-arrow-left"></i> Achievements
+							</a>
+							<a href="javascript:void(0)" onclick="toggleSection('about')" class="nav-arrow next">
+								About Me <i class="fas fa-arrow-right"></i>
+							</a>
+						</div>
+					</div>				
+				</div>
+
+				<footer id="footer"><span class="copyright">&copy; Shreyas Kumar Tah.</span></footer>
+			</div>
+		</div>
+		<script>
+			window.onload = function() { 
+				document.body.classList.remove('is-preload'); 
+				// Force loaded state after intro for smooth navigation
+				setTimeout(() => { document.body.classList.add('loaded'); }, 3500); 
+				startSlideshows(); 
+
+				// MOUSE GLOW LOGIC (Circular spotlight)
+				window.addEventListener('mousemove', e => {
+					const x = (e.clientX / window.innerWidth) * 100;
+					const y = (e.clientY / window.innerHeight) * 100;
+					document.getElementById('bg').style.setProperty('--x', x + '%');
+					document.getElementById('bg').style.setProperty('--y', y + '%');
+				});
+			}
+
+			// MULTI-SLIDESHOW ENGINE
+			function startSlideshows() {
+				const frames = document.querySelectorAll('.slideshow-frame');
+				
+				frames.forEach(frame => {
+					// Change: Look for both img and video tags
+					let elements = frame.querySelectorAll('img, video');
+					if (elements.length <= 1) return;
+					
+					let curr = 0;
+					setInterval(() => {
+						elements[curr].classList.remove('active');
+						curr = (curr + 1) % elements.length;
+						elements[curr].classList.add('active');
+					}, 3000); // Increased to 5 seconds so the 6s video shows most of its content
+				});
+			}
+
+			// NAVIGATION LOGIC (Swapping internal windows)
+			function toggleSection(id) {
+				document.getElementById('header').style.display = 'none'; 
+				document.getElementById('footer').style.display = 'none';
+				document.getElementById('portfolio-content').style.display = 'block';
+				
+				var pages = document.getElementsByClassName('page');
+				for (var i = 0; i < pages.length; i++) { 
+					pages[i].style.display = 'none'; 
+				}
+				
+				document.getElementById(id).style.display = 'block'; 
+				document.getElementById('portfolio-content').scrollTop = 0; // Reset scroll
+				document.body.classList.add('loaded');
+			}
+
+			// CLOSE MODAL LOGIC
+			function closeSection() {
+				document.body.classList.add('loaded'); 
+				document.getElementById('portfolio-content').style.display = 'none';
+				document.getElementById('header').style.display = 'inline-block'; 
+				document.getElementById('footer').style.display = 'block';
+			}
+		</script>
+	</body>
+</html>
