@@ -16,11 +16,43 @@
 		
 		<style>
 			/* --- 1. GLOBAL --- */
+			#bg {
+				background-color: #000 !important; /* Ensure edges blend into pure black */
+				background-image: url('assets/css/images/bg-desktop.jpg') !important;
+				background-repeat: repeat-x !important; /* Allows seamless horizontal scrolling */
+				background-size: auto 100% !important; /* FIXES THE ZOOM: Fills height, keeps width natural */
+				width: 6750px !important; /* Original template width for animation */
+				animation: bg 60s linear infinite !important; /* Restores the slow scroll */
+				z-index: 0;
+			}
+			#interactive-canvas {
+				position: fixed;
+				top: 0; left: 0;
+				width: 100%; height: 100%;
+				z-index: 1;
+				opacity: 0.4; /* Reduced overall opacity for subtlety */
+				pointer-events: none;
+			}
+			/* Class to hide the canvas when a window is open */
+			.canvas-hidden { 
+				display: none !important; 
+			}
+			/* --- 2. THE SEAMLESS OVERLAY (The "Magic" Step) --- */
+			#overlay {
+				opacity: 3 !important;
+				background-image: url("assets/css/images/overlay-pattern.png") !important; 
+				/* radial-gradient(circle at center, transparent 20%, #000 80%) !important; */
+				/* The radial gradient above acts like a 'soft mask'. 
+				It keeps the center clear but fades the edges to solid black, 
+				effectively 'hiding' the corners of your image as they scroll by. */
+				background-attachment: fixed !important;
+				background-size: auto, cover !important;
+			}
 			body, input, select, textarea, #header h1, .page h2, .nav-label { font-family: 'Inter', sans-serif !important; }
 			#header { top: 0 !important; transform: translateY(0); }
 			
 			/* ADD THIS HERE */
-			#overlay { opacity: 0.3 !important; } 
+			/* #overlay { opacity: 0.3 !important; }  */
 			
 			/* --- 2. MODAL WINDOW (GLASSMORPHISM) --- */
 			#portfolio-content {
@@ -41,22 +73,67 @@
 			.close-icon-btn {
 				position: sticky; top: -45px; float: right; margin-right: -35px;
 				background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(0,0,0,0.05);
-				color: #333 !important; width: 32px; height: 32px; border-radius: 50%; cursor: pointer;
+				color: #333 !important; width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
 				display: flex; align-items: center; justify-content: center; font-size: 0.9rem; 
 				transition: all 0.6s ease; z-index: 10001; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 			}
 			.close-icon-btn:hover { transform: rotate(180deg); background: #ff4d4d; color: #fff !important; }
 
-			/* --- 4. PREVIOUS / NEXT NAVIGATION --- */
+			/* --- 4. STICKY PREVIOUS / NEXT NAVIGATION --- */
 			.title-highlight { width: 60px; height: 6px; background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%); border-radius: 10px; margin-bottom: 15px; }
-			.window-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 60px; padding-top: 30px; border-top: 1px solid rgba(0,0,0,0.05); }
-			.nav-arrow { display: flex; align-items: center; gap: 10px; color: #2575fc !important; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; opacity: 0.5; border: none !important; cursor: pointer; }
-			.nav-arrow:hover { opacity: 1; color: #6a11cb !important; }
-
 			.page h2 { font-size: 2rem; font-weight: 800; color: #000; margin-bottom: 10px; text-transform: uppercase; letter-spacing: -0.5px; }
 			.page p { line-height: 1.6; font-size: 0.95rem; margin-bottom: 1.2em; color: #333; text-align: justify; }
 			.page a { color: #2575fc; text-decoration: none; border-bottom: 1px dotted #2575fc; font-weight: 600; }
 			.page a:hover { border-bottom: 1px solid #2575fc; }
+			
+			.window-nav {
+				position: sticky !important;
+				bottom: -70px; 
+				margin-bottom: -90px; 
+				margin-top: 50px;
+				display: flex;
+				justify-content: space-between;
+				z-index: 1000;
+				pointer-events: none;
+
+				/* HIDDEN BY DEFAULT */
+				opacity: 0;
+				visibility: hidden;
+				transition: opacity 0.5s ease, visibility 0.5s ease, transform 0.5s ease;
+				transform: translateY(10px); /* Slight slide up effect */
+			}
+
+			/* CLASS TO SHOW NAVIGATION (Triggered by JS) */
+			.nav-visible {
+				opacity: 1 !important;
+				visibility: visible !important;
+				transform: translateY(0) !important;
+			}
+
+			.nav-arrow {
+				pointer-events: auto;
+				display: flex;
+				align-items: center;
+				padding: 5px 10px; 
+				gap: 6px;
+				background: rgba(255, 255, 255, 0.95);
+				border-radius: 4px;
+				box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+				border: 1px solid rgba(0,0,0,0.05);
+				color: #2575fc !important;
+				font-size: 0.6rem; 
+				font-weight: 800;
+				text-transform: uppercase;
+				letter-spacing: 1px;
+				text-decoration: none !important;
+				transition: 0.3s;
+			}
+
+			.nav-arrow:hover { 
+				background: #fff;
+				color: #6a11cb !important;
+				transform: translateY(-2px);
+			}
 
 			/* --- 6. ABOUT ME & SIDEBAR --- */
 			.about-container { display: flex; gap: 40px; }
@@ -69,6 +146,43 @@
 			.social-icon:hover { filter: invert(1) brightness(0.6); transform: translateY(-2px); }
 			.cv-link { font-size: 0.75rem !important; font-weight: 800; background: rgba(0,0,0,0.06); padding: 6px 16px; border-radius: 4px; text-transform: uppercase; color: #333 !important; border: none !important; gap: 10px !important; }
 			.cv-link:hover { background: #27ae60 !important; color: #fff !important; filter: none !important; transform: translateY(-2px); }
+			/* --- CV BUTTON RUNNING BORDER --- */
+			.cv-highlight-wrapper {
+				position: relative;
+				padding: 1px; /* This defines the thickness of the border */
+				border-radius: 5px; /* Matches button roundness */
+				overflow: hidden;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				z-index: 1;}
+			/* The "Shiny" Green Line */
+			.cv-highlight-wrapper::before {
+				content: '';
+				position: absolute;
+				width: 200%;
+				height: 200%;
+				background: conic-gradient(#27ae60, transparent 20%, transparent);
+				animation: rotateBorder 4s linear infinite;
+				z-index: -1;}
+			/* The Background Mask (Prevents the center from being green) */
+			.cv-highlight-wrapper::after {
+				content: '';
+				position: absolute;
+				inset: 1px; /* Keeps the border thin */
+				background: rgba(255, 255, 255, 0.92); /* Matches window background */
+				border-radius: 4px;
+				z-index: -1;}
+			/* Stop animation on hover to focus on the click */
+			.cv-highlight-wrapper:hover::before {
+				animation-play-state: paused;}
+			@keyframes rotateBorder {
+				from { transform: rotate(0deg); }
+				to { transform: rotate(360deg); }}
+			/* Tweak the existing cv-link to fit inside the wrapper */
+			.cv-link {
+				background: transparent !important; /* Wrapper handles background now */
+				margin: 0 !important;}
 
 			/* --- 7. EXPERIENCE (VERTICAL TIMELINE) --- */
 			.v-timeline-container { position: relative; padding-left: 40px; margin-top: 20px; }
@@ -92,6 +206,19 @@
 
 			.hover-instruction { display: block !important; font-size: 0.7rem !important; font-weight: 700 !important; color: #000 !important; opacity: 0.3 !important; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 30px; }
 			.v-timeline-details ul li { font-size: 0.82rem !important; line-height: 1.4 !important; margin-bottom: 5px !important; color: #444 !important; }
+			/* --- ACTIVE EXPERIENCE STATE (Default Open) --- */
+			.v-timeline-item.active-timeline .v-timeline-details {
+				opacity: 1 !important;
+				visibility: visible !important;
+				transform: translateX(15px) !important;
+				pointer-events: auto !important;
+			}
+
+			.v-timeline-item.active-timeline .v-timeline-marker {
+				background: #6a11cb !important;
+				transform: scale(1.3);
+				box-shadow: 0 0 15px rgba(106, 17, 203, 0.4);
+			}
 
 			/* --- 8. PROJECTS & COMMON SLIDESHOW SYSTEM --- */
 			.projects-container { display: flex; flex-direction: column; gap: 30px; margin-top: 30px; }
@@ -172,16 +299,66 @@
 			
 			/* --- 11. MOBILE RESPONSIVE FIXES (Only trigger on phones) --- */
 			@media screen and (max-width: 736px) {
-				#bg { height: 100% !important; width: 100% !important; background-size: cover !important; background-position: center !important; position: fixed !important; }
-				
+				/* #bg { height: 100% !important; width: 100% !important; background-size: cover !important; background-position: center !important; position: fixed !important; } */
+				/* 1. Fix Background Animation & Repeat */
+				#bg { 
+					display: block !important;
+					visibility: visible !important;
+					position: fixed !important; 
+					top: 0 !important;
+					left: 0 !important;
+					height: 100% !important; 
+					width: 2250px !important; /* Smaller width for mobile stability */
+					z-index: 0 !important;
+					
+					/* Ensure this path is 100% correct */
+					background-image: url('assets/css/images/bg-mobile.jpg') !important;
+					background-repeat: repeat-x !important; 
+					background-size: auto 100% !important; 
+					background-position: top left !important;
+					
+					/* Animation */
+					animation: bg 60s linear infinite !important; 
+					-webkit-animation: bg 60s linear infinite !important;
+				}
+
+				/* FIX: Make sure the overlay isn't solid black */
+				/* FIX: Make overlay "clickable-through" and set layers correctly */
+				#overlay {
+					opacity: 1 !important;
+					background-image: url("assets/css/images/overlay-pattern.png"), radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.4) 100%) !important;
+					background-color: transparent !important;
+					z-index: 1 !important;
+					
+					/* THE MAGIC LINE: Allows clicks to pass through this layer to the buttons below */
+					pointer-events: none !important; 
+				}
+
+				/* FIX: Force the main content area to sit on top of the background and overlay */
+				#main {
+					position: relative !important;
+					z-index: 10 !important; /* Much higher than the overlay's z-index of 1 */
+				}
+
+				/* FIX: Ensure the header (icons) is also prioritized for touch */
+				#header {
+					position: relative !important;
+					z-index: 11 !important;
+					pointer-events: auto !important; /* Ensures icons are definitely clickable */
+				}
+
+				/* Hide the mouse glow logic as it can cause flicker on mobile */
+				#bg::after {
+					display: none !important;
+				}
 				/* FIX: Positioning the Close Button so it's not cut off */
 				.close-icon-btn {
 					position: absolute !important; /* Absolute works better than sticky on small mobile headers */
 					top: 10px !important;
 					right: 10px !important;
 					margin-right: 0 !important; /* Removes the desktop negative margin */
-					width: 28px !important;
-					height: 28px !important;
+					width: 24px !important;
+					height: 24px !important;
 					font-size: 0.8rem !important;}
 
 				/* Fix Timeline Alignment */
@@ -198,7 +375,15 @@
 				#contact .sidebar-row { display: flex !important; flex-direction: row !important; flex-wrap: nowrap !important; overflow-x: auto !important; }
 
 				#portfolio-content { padding: 40px 15px 80px 15px !important; width: 95% !important; max-height: 85vh !important; }
-				.about-container { flex-direction: column !important; }
+				.about-container { display: flex !important; flex-direction: column !important; }
+				.about-sidebar { 
+					order: -1 !important; /* THIS MOVES PHOTO/SOCIALS TO THE TOP */
+					width: 100% !important; 
+					flex: none !important;
+					margin-bottom: 25px !important;
+				}
+				.about-main { width: 100% !important; flex: none !important; }
+				.profile-photo { width: 120px !important; height: 120px !important; }
 				.v-timeline-details { position: static !important; width: 100% !important; opacity: 1 !important; visibility: visible !important; transform: none !important; margin-top: 10px !important; padding: 15px !important; }
 				/* .project-card { flex-direction: column !important; } */
 				.page p { font-size: 0.85rem !important; text-align: left !important; }
@@ -234,6 +419,7 @@
 	<body class="is-preload">
 		<div id="wrapper">
 			<div id="bg"></div>
+			<canvas id="interactive-canvas"></canvas>
 			<div id="overlay"></div>
 			<div id="main">
 
@@ -274,7 +460,7 @@
 									<li>Robust, uncertainty-aware, and reasoning-driven machine learning frameworks</li>
 								</ul>
 
-								<p>Previously, I worked as an AI Engineer at <a href="http://grainscope.ai" target="_blank">Grainscope AI</a>, where I developed computer vision pipelines for industrial grain quality assessment. My technical contributions to the Grain Analyser product were formally recognized through a government-issued copyright certificate obtained by the company. I also held research roles at <a href="https://www.indiascienceandtechnology.gov.in/organisations/ministry-and-departments/defence-research-and-development-organisation-drdo-govt-india/centre-artificial-intelligence-robotics-cair" target="_blank">CAIR-DRDO Bangalore</a> and IISc Bangalore. I hold a Bachelor of Technology in Mechanical Engineering from BIT Sindri, graduating with a CGPA of 8.4/10. My undergraduate thesis on AI-driven airfoil optimisation was awarded 2nd Best Thesis in the department.</p>
+								<p>Previously, I worked as an AI Engineer at <a href="http://grainscope.ai" target="_blank">Grainscope AI</a>, where I developed computer vision pipelines for industrial grain quality assessment. My technical contributions to the Grain Analyser product were formally recognized through a government-issued copyright certificate obtained by the company. I also held research roles at <a href="https://www.indiascienceandtechnology.gov.in/organisations/ministry-and-departments/defence-research-and-development-organisation-drdo-govt-india/centre-artificial-intelligence-robotics-cair" target="_blank">CAIR-DRDO Bangalore</a>. I hold a Bachelor of Technology from BIT Sindri, Dhanbad Jharkhand, graduating with a CGPA of 8.4/10. My undergraduate thesis on AI-driven airfoil optimisation was awarded 2nd Best Thesis in the department.</p>
 								
 								<p>Beyond research and engineering, I have a strong inclination toward visual creativity and design. I enjoy painting, exploring digital aesthetics, and blending artistic thinking with technical problem-solving. I consider myself a workaholic who genuinely enjoys deep, focused work, while also embracing a minimalist lifestyle centered on clarity, simplicity, and intentional living. I am equally passionate about mentoring, leadership, and community-driven initiatives.</p>
 
@@ -314,7 +500,13 @@
 									<a href="mailto:shreyaskumartah@gmail.com" class="social-icon"><i class="fas fa-envelope"></i></a>
 									<a href="https://github.com/skt-shreyas/" target="_blank" class="social-icon"><i class="fab fa-github"></i></a>
 									<a href="https://behance.net/shreyaskumart" target="_blank" class="social-icon"><i class="fab fa-behance"></i></a>
-									<a href="Shreyas_Kumar_Tah_Resume.pdf" class="cv-link" target="_blank"><i class="fas fa-file-download"></i> CV</a>
+									<!-- <a href="Shreyas_Kumar_Tah_Resume.pdf" class="cv-link" target="_blank"><i class="fas fa-file-download"></i> CV</a> -->
+									<!-- CV Link with Shiny Border Wrapper -->
+									<div class="cv-highlight-wrapper">
+										<a href="Shreyas_Kumar_Tah_Resume.pdf" class="cv-link" target="_blank">
+											<i class="fas fa-file-download"></i> CV
+										</a>
+									</div>
 								</div>
 							</div>
 						</div>
@@ -340,8 +532,8 @@
 						<div class="v-timeline-container">
 							<div class="v-timeline-line"></div>
 
-							<!-- 1. KIAC -->
-							<div class="v-timeline-item">
+							<!-- 1. KIAC (Set as 'active-timeline' by default) -->
+							<div class="v-timeline-item active-timeline" onmouseover="clearActiveExperience(this)">
 								<div class="v-timeline-marker"></div>
 								<div class="v-timeline-info">
 									<h4><a href="https://kiac.iisc.ac.in/" target="_blank">KIAC, IISc Bangalore</a></h4>
@@ -366,13 +558,13 @@
 							</div>
 
 							<!-- 2. IACV Lab -->
-							<div class="v-timeline-item">
+							<div class="v-timeline-item" onmouseover="clearActiveExperience(this)">
 								<div class="v-timeline-marker"></div>
 								<div class="v-timeline-info">
 									<h4><a href="https://sites.google.com/iisc.ac.in/somabiswas/iacv-lab-iisc" target="_blank">IACV Lab, IISc Bangalore</a></h4>
 									<span>Research Associate</span>
 									<span class="v-date">June 2024 – March 2026</span>
-									<span class="role-tag role-research">Research Role</span>
+									<span class="role-tag role-industry">Industrial Research Role</span>
 								</div>
 								<div class="v-timeline-details">
 									<div class="slideshow-frame">
@@ -381,9 +573,10 @@
 										<img src="assets/css/images/experiences/i3.jpg">
 									</div>
 									<ul>
-										<li>Worked on DRDO-funded Multimodal OSINT Analysis</li>
+										<li>Worked on DRDO-funded project "Multimodal Analysis of Opensource Information"</li>
 										<li>Designed fusion mechanisms using CLIP + Transformers</li>
 										<li>Developed FraudNet (WACV 2025), HybridNet, ALARM</li>
+										<li>Developed Agentic system for MFND task, integrating above methods</li>
 									</ul>
 									<div class="work-tag-container">
 										<span class="work-tag">Robustness</span> <span class="work-tag">Multimodal</span> <span class="work-tag">ML</span> <span class="work-tag">CV</span> <span class="work-tag">PyTorch</span>
@@ -392,13 +585,13 @@
 							</div>
 
 							<!-- 3. Grainscope AI -->
-							<div class="v-timeline-item">
+							<div class="v-timeline-item" onmouseover="clearActiveExperience(this)">
 								<div class="v-timeline-marker"></div>
 								<div class="v-timeline-info">
 									<h4><a href="http://grainscope.ai" target="_blank">Grainscope AI</a></h4>
 									<span>AI Engineer (Hybrid)</span>
 									<span class="v-date">July 2023 – Feb 2025</span>
-									<span class="role-tag role-industry">Industry Role</span>
+									<span class="role-tag role-industry">Industrial Research Role</span>
 								</div>
 								<div class="v-timeline-details">
 									<div class="slideshow-frame">
@@ -419,16 +612,15 @@
 							</div>
 
 							<!-- 4. CAIR, DRDO -->
-							<div class="v-timeline-item">
+							<div class="v-timeline-item" onmouseover="clearActiveExperience(this)">
 								<div class="v-timeline-marker"></div>
 								<div class="v-timeline-info">
 									<h4><a href="https://drdo.gov.in" target="_blank">CAIR, DRDO Bangalore</a></h4>
 									<span>Intern</span>
 									<span class="v-date">May 2023 – July 2023</span>
-									<span class="role-tag role-drdo">DRDO</span>
+									<span class="role-tag role-drdo">Internship</span>
 								</div>
 								<div class="v-timeline-details">
-									<!-- ADDED MULTIPLE IMAGES HERE -->
 									<div class="slideshow-frame">
 										<img src="assets/css/images/experiences/d1.jpg" class="active">
 										<img src="assets/css/images/experiences/d2.jpg">
@@ -470,19 +662,19 @@
 						<!-- PART A: SCIENTIFIC PUBLICATIONS -->
 						<div style="margin-top: 40px;">
 							<div class="title-highlight" style="width: 40px; height: 4px;"></div>
-							<h3 style="font-size: 1.1rem; font-weight: 800; text-transform: uppercase; color: #000; margin-bottom: 20px;">Scientific Publications</h3>
+							<h3 style="font-size: 1.1rem; font-weight: 800; text-transform: uppercase; color: #000; margin-bottom: 20px;">Publications</h3>
 							
 							<div class="projects-container" style="margin-top: 10px;">
 								
+								
+
 								<!-- Publication 1 -->
 								<div class="project-card" style="padding: 20px 30px;">
 									<div class="project-content" style="flex: 1;">
 										<p style="margin-bottom: 0;">
 											<span class="news-tag tag-blue">[PAPER]</span> 
-											<a href="https://openaccess.thecvf.com/content/WACV2025/papers/Patel_FRAUD-Net_Fraud_News_Detection_using_Sample_Uncertainty__Domain_Aware_WACV_2025_paper.pdf" target="_blank" style="color: #000; text-decoration: none; border-bottom: 1px solid #ddd;">
-												<strong>FRAUD-Net:</strong> Fraud News Detection Using Sample Uncertainty & Domain Aware Generalized Network 
-											</a>
-											<span style="color: #666; font-weight: 600; font-size: 0.8rem; margin-left: 5px;">(WACV 2025)</span>
+											<strong>HybridNet:</strong> <!-- Hybrid Multimodal Framework for Fake News Detection under Distribution Shifts -->
+											<span style="color: #666; font-weight: 600; font-size: 0.8rem; margin-left: 5px;">(Under Submission)</span>
 										</p>
 									</div>
 								</div>
@@ -492,7 +684,7 @@
 									<div class="project-content" style="flex: 1;">
 										<p style="margin-bottom: 0;">
 											<span class="news-tag tag-blue">[PAPER]</span> 
-											<strong>HybridNet:</strong> Data-Efficient Fake News Detection via Hybrid Active Learning and Reasoning-Aware Classification
+											<strong>ALARM:</strong> <!--Multimodal Framework for Robust Fake News Detection in Low-Resource Settings-->
 											<span style="color: #666; font-weight: 600; font-size: 0.8rem; margin-left: 5px;">(Under Submission)</span>
 										</p>
 									</div>
@@ -503,8 +695,10 @@
 									<div class="project-content" style="flex: 1;">
 										<p style="margin-bottom: 0;">
 											<span class="news-tag tag-blue">[PAPER]</span> 
-											<strong>ALARM:</strong> Multimodal Framework for Robust Fake News Detection in Low-Resource Settings
-											<span style="color: #666; font-weight: 600; font-size: 0.8rem; margin-left: 5px;">(Under Submission)</span>
+											<a href="https://openaccess.thecvf.com/content/WACV2025/papers/Patel_FRAUD-Net_Fraud_News_Detection_using_Sample_Uncertainty__Domain_Aware_WACV_2025_paper.pdf" target="_blank" style="color: #000; text-decoration: none; border-bottom: 1px solid #ddd;">
+												<strong>FRAUD-Net:</strong> Fraud News Detection Using Sample Uncertainty & Domain Aware Generalized Network 
+											</a>
+											<span style="color: #666; font-weight: 600; font-size: 0.8rem; margin-left: 5px;">(WACV 2025)</span>
 										</p>
 									</div>
 								</div>
@@ -628,6 +822,11 @@
 								
 								<div class="news-item">
 									<span class="news-tag tag-blue">[RECOGNITION]</span> 
+									Author in copyright certificate for the contribution in Grainscope AI
+									<!-- Awarded <strong>2nd Best Thesis</strong> (Mechanical Dept.), BIT Sindri -->
+								</div>
+								<div class="news-item">
+									<span class="news-tag tag-blue">[RECOGNITION]</span> 
 									Awarded <strong>2nd Best Thesis</strong> (Mechanical Dept.), BIT Sindri
 								</div>
 								<div class="news-item">
@@ -683,7 +882,7 @@
 						<div class="title-highlight"></div>
 						<h2>Contact</h2>
 						
-						<p>I am always open to discussing research collaborations, AI engineering opportunities, or design projects. Feel free to reach out via any of the platforms below.</p>
+						<p>I am always open to discussing research collaborations, AI engineering opportunities. Feel free to reach out.</p>
 						
 						<!-- Professional Status Badge -->
 						<div style="display: inline-block; background: rgba(37, 117, 252, 0.1); border: 1px solid #2575fc; color: #2575fc; padding: 6px 15px; border-radius: 20px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 30px;">
@@ -761,23 +960,113 @@
 				document.body.classList.remove('is-preload'); 
 				// Force loaded state after intro for smooth navigation
 				setTimeout(() => { document.body.classList.add('loaded'); }, 3500); 
+				
 				startSlideshows(); 
+				initNeuralTrail(); // Initialize the minimalist pulse waves
 
-				// MOUSE GLOW LOGIC (Circular spotlight)
+				// MOUSE GLOW & PARTICLE LOGIC
 				window.addEventListener('mousemove', e => {
 					const x = (e.clientX / window.innerWidth) * 100;
 					const y = (e.clientY / window.innerHeight) * 100;
-					document.getElementById('bg').style.setProperty('--x', x + '%');
-					document.getElementById('bg').style.setProperty('--y', y + '%');
+					const bg = document.getElementById('bg');
+					if(bg) {
+						bg.style.setProperty('--x', x + '%');
+						bg.style.setProperty('--y', y + '%');
+					}
+
+					if (window.spawnParticles) {
+						window.spawnParticles(e.clientX, e.clientY);
+					}
+				});
+				
+				// Touch support for mobile
+				window.addEventListener('touchmove', e => {
+					if (window.spawnParticles) {
+						window.spawnParticles(e.touches[0].clientX, e.touches[0].clientY);
+					}
+				});
+
+				// --- NEW: SCROLL TRIGGER FOR NAVIGATION PILLS ---
+				const modal = document.getElementById('portfolio-content');
+				modal.addEventListener('scroll', function() {
+					// Find the nav bar inside the currently active (displayed) page
+					const activeNav = this.querySelector('.page[style*="display: block"] .window-nav');
+					if (!activeNav) return;
+
+					// If user scrolls more than 50px, show the pills
+					if (this.scrollTop > 10) { 
+						activeNav.classList.add('nav-visible');
+					} else {
+						activeNav.classList.remove('nav-visible');
+					}
 				});
 			}
 
-			// MULTI-SLIDESHOW ENGINE
+			// --- REFINED MINIMALIST NEURAL TRAIL ---
+			function initNeuralTrail() {
+				const canvas = document.getElementById('interactive-canvas');
+				if (!canvas) return;
+				const ctx = canvas.getContext('2d');
+				let particles = [];
+
+				function resize() {
+					canvas.width = window.innerWidth;
+					canvas.height = window.innerHeight;
+				}
+				window.addEventListener('resize', resize);
+				resize();
+
+				class Pulse {
+					constructor(x, y) {
+						this.x = x;
+						this.y = y;
+						this.size = 20; 
+						this.maxSize = 80; 
+						this.opacity = 0.5;
+						this.color = Math.random() > 0.5 ? '#2575fc' : '#6a11cb';
+					}
+					update() {
+						this.size += 2; 
+						this.opacity -= 0.02; 
+					}
+					draw() {
+						ctx.beginPath();
+						ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+						const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size);
+						gradient.addColorStop(0, this.color);
+						gradient.addColorStop(1, 'transparent');
+						
+						ctx.globalAlpha = this.opacity;
+						ctx.fillStyle = gradient;
+						ctx.fill();
+					}
+				}
+
+				window.spawnParticles = function(x, y) {
+					if (!canvas.classList.contains('canvas-hidden') && Math.random() > 0.8) { 
+						particles.push(new Pulse(x, y));
+					}
+				}
+
+				function animate() {
+					ctx.clearRect(0, 0, canvas.width, canvas.height);
+					for (let i = 0; i < particles.length; i++) {
+						particles[i].update();
+						particles[i].draw();
+						if (particles[i].opacity <= 0) {
+							particles.splice(i, 1);
+							i--;
+						}
+					}
+					requestAnimationFrame(animate);
+				}
+				animate();
+			}
+
+			// 1. MULTI-SLIDESHOW ENGINE
 			function startSlideshows() {
 				const frames = document.querySelectorAll('.slideshow-frame');
-				
 				frames.forEach(frame => {
-					// Change: Look for both img and video tags
 					let elements = frame.querySelectorAll('img, video');
 					if (elements.length <= 1) return;
 					
@@ -786,14 +1075,31 @@
 						elements[curr].classList.remove('active');
 						curr = (curr + 1) % elements.length;
 						elements[curr].classList.add('active');
-					}, 3000); // Increased to 5 seconds so the 6s video shows most of its content
+					}, 5000); 
 				});
 			}
 
-			// NAVIGATION LOGIC (Swapping internal windows)
+			// 2. TIMELINE ACTIVE STATE LOGIC
+			function clearActiveExperience(element) {
+				const container = element.closest('.v-timeline-container');
+				const activeItem = container.querySelector('.v-timeline-item.active-timeline');
+				if (activeItem) {
+					activeItem.classList.remove('active-timeline');
+				}
+			}
+
+			// 3. NAVIGATION LOGIC (Swapping internal windows)
 			function toggleSection(id) {
 				document.getElementById('header').style.display = 'none'; 
 				document.getElementById('footer').style.display = 'none';
+				
+				const canvas = document.getElementById('interactive-canvas');
+				if (canvas) canvas.classList.add('canvas-hidden');
+
+				// Reset visibility for all navigation pills before showing new page
+				const allNavs = document.querySelectorAll('.window-nav');
+				allNavs.forEach(nav => nav.classList.remove('nav-visible'));
+
 				document.getElementById('portfolio-content').style.display = 'block';
 				
 				var pages = document.getElementsByClassName('page');
@@ -802,14 +1108,25 @@
 				}
 				
 				document.getElementById(id).style.display = 'block'; 
-				document.getElementById('portfolio-content').scrollTop = 0; // Reset scroll
+				document.getElementById('portfolio-content').scrollTop = 0;
 				document.body.classList.add('loaded');
+
+				if (id === 'experience') {
+					const firstExp = document.querySelector('.v-timeline-item');
+					if (firstExp) {
+						firstExp.classList.add('active-timeline');
+					}
+				}
 			}
 
-			// CLOSE MODAL LOGIC
+			// 4. CLOSE MODAL LOGIC
 			function closeSection() {
 				document.body.classList.add('loaded'); 
 				document.getElementById('portfolio-content').style.display = 'none';
+
+				const canvas = document.getElementById('interactive-canvas');
+				if (canvas) canvas.classList.remove('canvas-hidden');
+
 				document.getElementById('header').style.display = 'inline-block'; 
 				document.getElementById('footer').style.display = 'block';
 			}
